@@ -13,13 +13,15 @@ void customize(DropdownList ddl) {
 
 // keyboard key presses automatically calls this
 void keyPressed() {
-  if (!cp5.get(Textfield.class,"out_t").isActive()) {
-    if (key == ENTER) {  }
-    if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(true ); }
-  }
-  else {
-    if (key == ENTER) { enterPressed(); }
-    if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(false); }
+  if (DEBUG) {
+    if (!cp5.get(Textfield.class,"out_t").isActive()) {
+      if (key == ENTER) {  }
+      if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(true ); }
+    }
+    else {
+      if (key == ENTER) { enterPressed(); }
+      if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(false); }
+    }
   }
 }
 

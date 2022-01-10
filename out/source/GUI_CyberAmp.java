@@ -66,38 +66,39 @@ int[][] vals = {  {0,  0,  0,  0,  0,  0,  0,  0},       // optsP index
 
 RetroDisplay[][] allDisplays;
 
+static final private boolean DEBUG = true;
+
 /* SETTINGS - runs only once
 ******************************************************************************/
 public void settings() {
   size(sizeX, sizeY, P2D);
-  
   smooth(8);
 }
+
 /* SETUP - runs only once
 ******************************************************************************/
 public void setup() {
-  //size(650, 370, P2D);
-  
   cp5 = new ControlP5( this ); // makes new instance of ControlP5
 
   // initial font settings
   String[] fontList = PFont.list(); // Get list of fonts
-  printArray(fontList);
-  
   font = createFont(fontList[fontNum], fontSize, true); // create font
   textSize(40);
   textMode(SHAPE);
 
-  cp5.addTextfield("out_t")
-     .setLabel("")
-     .setPosition(10, sizeY-50)
-     .setSize(200,20)
-     .setFont(font)
-     .setColorBackground(color(50, 50, 50))
-     .setColorActive(color(255, 0, 128))
-     .setColorValue(color(120, 255, 50))
-     .setAutoClear(false)
-     ;
+  
+  if (DEBUG) {
+    cp5.addTextfield("out_t")
+      .setLabel("")
+      .setPosition(10, sizeY-50)
+      .setSize(200,20)
+      .setFont(font)
+      .setColorBackground(color(50, 50, 50))
+      .setColorActive(color(255, 0, 128))
+      .setColorValue(color(120, 255, 50))
+      .setAutoClear(false)
+      ;
+  }
 
   allDisplays = new RetroDisplay[Nlin][Nch];
 
@@ -105,7 +106,7 @@ public void setup() {
     constructChannel(i, 50, 80+i*30, 10, 10);
   }
 
-  port_list = cp5.addDropdownList("port_list") // make post list dropdown
+  port_list = cp5.addDropdownList("port_list") // make port list dropdown
               .setPosition(410, 20)
               .setSize(200, 200)
               .close()
@@ -128,11 +129,10 @@ public void setup() {
 ******************************************************************************/
 public void draw() {
   if(connected) {
-    background(color(0,0,0)); // background colour
+    background(color(10,50,100)); // background colour
   }
   else {
-    background(color(0,0,0)); // background colour
-    // background(color(random(255),random(255),random(255)));
+    background(color(10,50,100)); // background colour
   }
   textFont(font); // set font
   textAlign(LEFT, CENTER); // set text allignment
@@ -180,13 +180,15 @@ public void customize(DropdownList ddl) {
 
 // keyboard key presses automatically calls this
 public void keyPressed() {
-  if (!cp5.get(Textfield.class,"out_t").isActive()) {
-    if (key == ENTER) {  }
-    if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(true ); }
-  }
-  else {
-    if (key == ENTER) { enterPressed(); }
-    if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(false); }
+  if (DEBUG) {
+    if (!cp5.get(Textfield.class,"out_t").isActive()) {
+      if (key == ENTER) {  }
+      if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(true ); }
+    }
+    else {
+      if (key == ENTER) { enterPressed(); }
+      if (key == TAB) { cp5.get(Textfield.class,"out_t").setFocus(false); }
+    }
   }
 }
 
