@@ -28,13 +28,31 @@ A Graphical User Interface for a CyberAmp380 as the CyberAmp Control program doe
     - Install libraries (Cketch > Import Library... > Add Library > search for "controlP5" or "G4P" and Install)
 - Download the repository, open "GUI_CyberAmp.pde" in Processing and Sketch > Run
 
-![Screenshot](GUI_CyberAmp_preConnect.png)
+![ScreenshotGUI](GUI_CyberAmp_preConnect.png)
 
 ## How to use
-The first thing to do is connect to the appropriate COM port, that was COM 7 in this example  ([Setup and Launch](#setup-and-launch)).
-Select the correct one from the top-right drop-down menu.
-- explain DEBUG option
+The first thing to do is connect to the appropriate Serial COM port (that was COM 7 in this example  [Setup and Launch](#setup-and-launch)).
+Select the correct one from the "Serial port" drop-down menu.
 
+The GUI will update every channel to the last stored values in the CyberAmp.
+
+The schematics for each channel can be found on page 6 of the "CyberAmp 380 operator's manual" and it will help in understanding the categories of the GUI:
+
+![ScreenshotSIGPROCPATH](SignalProcessingPathway_fromManual.png)
+
+ - POZ and NEG select the coupling of the + and - inputs, respectively
+ - PreAmp is the pre-filter amplifier
+ - Offset in microvolts with Update and Zero buttons
+    - Update is used when the user inputs a new value and want to send it to the device
+    - Zero will zero-offset the channel if possible
+- LPF is the Low Pass Filter
+- Notch filter selector toggle button
+- PostAmp is the output amplifier
+- TotalAmp reports the total amplification
+
+## Future ideas
+- overload detection
+- user definable colours
 
 [docplayer]: https://docplayer.fr/155872871-Cyberamp-380-operator-s-manual.html
 [ATEN-website]: https://www.aten.com/global/en/products/usb-&-thunderbolt/usb-converters/uc232a/
