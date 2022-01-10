@@ -10,7 +10,7 @@ A Graphical User Interface for a CyberAmp380 as the CyberAmp Control program doe
 - ATEN USB to RS-232 Adapter (UC232A) [ATEN-website]
 - CyberAmp 380 (8 channel)
 - NAME adaptor
-- Win10
+- Windows 10
 - [Processing] with ControlP5 and G4P libraries
 
 ## Setup and Launch
@@ -28,8 +28,11 @@ A Graphical User Interface for a CyberAmp380 as the CyberAmp Control program doe
     - Install libraries (Cketch > Import Library... > Add Library > search for "controlP5" or "G4P" and Install)
 - Download the repository, open "GUI_CyberAmp.pde" in Processing and Sketch > Run
 
+![Screenshot](GUI_CyberAmp_preConnect.png)
+
 ## How to use
-The first thing to do is connect to the appropriate COM port, that was COM 7 in this example  ([Setup and Launch](#setup-and-launch))
+The first thing to do is connect to the appropriate COM port, that was COM 7 in this example  ([Setup and Launch](#setup-and-launch)).
+Select the correct one from the top-right drop-down menu.
 - explain DEBUG option
 
 
