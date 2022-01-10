@@ -47,7 +47,9 @@ int[][] vals = {  {0,  0,  0,  0,  0,  0,  0,  0},       // optsP index
 
 RetroDisplay[][] allDisplays;
 
-static final private boolean DEBUG = true;
+boolean pointToSerialPortDropdown = false;
+
+static final private boolean DEBUG = false;
 
 /* SETTINGS - runs only once
 ******************************************************************************/
@@ -145,4 +147,12 @@ void draw() {
   text("NOTCH", Xlab+381, Ylab);
   text("PostAmp", Xlab+432, Ylab);
   text("TotalAmp", Xlab+500, Ylab);
+
+  if (!connected && pointToSerialPortDropdown) {
+    for(int i = 1; i <= 10; i++) {
+      stroke(color(255, 0, 0));
+      fill(color( 255*sin(radians(millis()/3)), 0, 0));
+      rect(400, 10, 220, 30);
+    }
+  }
 }

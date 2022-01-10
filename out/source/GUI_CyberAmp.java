@@ -66,7 +66,9 @@ int[][] vals = {  {0,  0,  0,  0,  0,  0,  0,  0},       // optsP index
 
 RetroDisplay[][] allDisplays;
 
-static final private boolean DEBUG = true;
+boolean pointToSerialPortDropdown = false;
+
+static final private boolean DEBUG = false;
 
 /* SETTINGS - runs only once
 ******************************************************************************/
@@ -164,6 +166,16 @@ public void draw() {
   text("NOTCH", Xlab+381, Ylab);
   text("PostAmp", Xlab+432, Ylab);
   text("TotalAmp", Xlab+500, Ylab);
+
+  // point to serial port dropdown if not connected and command wants to be sent
+  if (!connected && pointToSerialPortDropdown) {
+    for(int i = 1; i <= 10; i++) {
+      // make a red blinking rect around the port_list (use its position and size)
+      stroke(color(255, 0, 0));
+      fill(color( 255*sin(radians(millis()/3)), 0, 0));
+      rect(400, 10, 220, 30);
+    }
+  }
 }
 /* FUNCTIONS
 ******************************************************************************/
@@ -330,6 +342,7 @@ public void writeToPort(String message) {
   }
   else {
     println("Not yet connected");
+    pointToSerialPortDropdown = true;
   }
   println("  Sent: "+message+"\n");
 }

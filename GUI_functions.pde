@@ -163,6 +163,7 @@ void writeToPort(String message) {
   }
   else {
     println("Not yet connected");
+    pointToSerialPortDropdown = true;
   }
   println("  Sent: "+message+"\n");
 }
