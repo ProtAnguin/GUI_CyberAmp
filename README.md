@@ -1,5 +1,6 @@
 # GUI_CyberAmp
-A Graphical User Interface for a CyberAmp380 as the CyberAmp Control program does not work on newer versions of Windows. The manual for CyberAmp380 was downloaded from [docplayer].
+A Graphical User Interface for CyberAmp 320 and CyberAmp 380 as the CyberAmp Control program does not work on newer versions of Windows. The manual for CyberAmp380 was downloaded from [docplayer].
+This GUI uses the command from the "Programmer's Guide" section in the manual (page 94 in the document). Not all commands are used at this moment, the diagnostics are ommitted. This GUI thus allows for signal conditioning and amplification. Probes are not supported.
 
 ## Table of content
 * [Technologies](#technologies)
@@ -31,10 +32,7 @@ A Graphical User Interface for a CyberAmp380 as the CyberAmp Control program doe
 ![ScreenshotGUI](GUI_CyberAmp_preConnect.png)
 
 ## How to use
-The first thing to do is connect to the appropriate Serial COM port (that was COM 7 in this example  [Setup and Launch](#setup-and-launch)).
-Select the correct one from the "Serial port" drop-down menu.
-
-The GUI will update every channel to the last stored values in the CyberAmp.
+The first thing to do is connect to the appropriate Serial COM port (that was COM 7 in this example  [Setup and Launch](#setup-and-launch)) by selecting the correct one from the "Serial port" drop-down menu. If a correct device is selected the GUI query CyberAmp for current values and update every channel to the last stored values in the CyberAmp. The bottom-right "Save to CyberAmp" button stores the current values to the CyberAmp (writen to a non-volatile memory).
 
 The schematics for each channel can be found on page 6 of the "CyberAmp 380 operator's manual" and it will help in understanding the categories of the GUI:
 
@@ -53,6 +51,10 @@ The schematics for each channel can be found on page 6 of the "CyberAmp 380 oper
 ## Future ideas
 - overload detection
 - user definable colours
+- allow more than one device on the same COM port
+- implementation of other commands in the Programmer's Guide
+- add (+) and (-) buttons for setting Offset without the need to type in numbers
+- query for overload reports and show in the GUI
 
 [docplayer]: https://docplayer.fr/155872871-Cyberamp-380-operator-s-manual.html
 [ATEN-website]: https://www.aten.com/global/en/products/usb-&-thunderbolt/usb-converters/uc232a/

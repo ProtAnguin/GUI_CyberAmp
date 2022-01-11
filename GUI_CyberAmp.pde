@@ -11,39 +11,43 @@ Serial myPort; // selected COM port
 boolean connected = false;
 String incoming = "";
 
-static int BAUDRATE = 19600; // Serial baudrate, needs to be same on both ends (PC and Arduino)
+// TODO: Check how is it working given that the BAUDRATE for ATEN is 9600
+static int BAUDRATE = 19600; // Serial baudrate, needs to be same on both ends (PC and device)
 
 PFont font;
-int fontNum = 2;
-int fontSize = 11;
+int fontNum =     2;
+int fontSize =    11;
 
-int gain[] = {1, 2, 5};
+int gain[] =      {1, 2, 5};
 
-int Nch = 8; // number of channels
-int sizeX = 650;
-int sizeY = 370;
+int Nch =         8; // number of channels
+int sizeX =       650;
+int sizeY =       370;
 
-int Nlin = 6;
-int linP = 0; // line in vals to get optsP index
-int linO = 1;
-int linCp = 2;
-int linCn = 3;
-int linF = 4;
-int linT = 5;
-int optsP[] =  {    1,  10, 100};
-int optsO[] =  {    1,   2,   5,  10,  20,  50, 100, 200};
-int optsF[] =  {    0,     2,     4,     6,     8,    10,    12,    14,    16,    18,    20,    22,    24,    26,    28,    30,
-                                 40,    60,    80,   100,   120,   140,   160,   180,   200,   220,   240,   260,   280,   300,
-                                400,   600,   800,  1000,  1200,  1400,  1600,  1800,  2000,  2200,  2400,  2600,  2800,  3000,
-                               4000,  6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000 };
+int Nlin =        6; // 
+int linP =        0; // line in vals to get optsP index
+int linO =        1;
+int linCp =       2;
+int linCn =       3;
+int linF =        4;
+int linT =        5;
+
+int[][] vals = {  {0, 0, 0, 0, 0, 0, 0, 0},       // optsP index
+                  {0, 0, 0, 0, 0, 0, 0, 0},       // optsO index
+                  {0, 0, 0, 0, 0, 0, 0, 0},       // optsC index for POS
+                  {0, 0, 0, 0, 0, 0, 0, 0},       // optsC index for NEG
+                  {0, 0, 0, 0, 0, 0, 0, 0}        // optsF
+               };
+
+int optsP[] =  {  1,    10,   100};
+int optsO[] =  {  1,     2,     5,    10,    20,    50,   100,   200};
+int optsF[] =  {  0,     2,     4,     6,     8,    10,    12,    14,    16,    18,    20,    22,    24,    26,    28,    30,
+                               40,    60,    80,   100,   120,   140,   160,   180,   200,   220,   240,   260,   280,   300,
+                              400,   600,   800,  1000,  1200,  1400,  1600,  1800,  2000,  2200,  2400,  2600,  2800,  3000,
+                             4000,  6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000 };
 String[] optsC = {"GND", "DC ", "0.1", "1", "10", "30", "100", "300"}; // coupling options
 
-int[][] vals = {  {0,  0,  0,  0,  0,  0,  0,  0},       // optsP index
-                  {0,  0,  0,  0,  0,  0,  0,  0},       // optsO index
-                  {0,  0,  0,  0,  0,  0,  0,  0},       // optsC index for POS
-                  {0,  0,  0,  0,  0,  0,  0,  0},       // optsC index for NEG
-                  {0,  0,  0,  0,  0,  0,  0,  0}        // optsF
-               };
+
 
 RetroDisplay[][] allDisplays;
 
