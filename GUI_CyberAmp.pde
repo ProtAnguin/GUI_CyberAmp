@@ -1,6 +1,6 @@
 /* DECLARATIONS
 ******************************************************************************/
-String GUINAME = "Cyber Amp GUI";
+String GUINAME = "CyberAmp GUI";
 import controlP5.*;
 import processing.serial.*;
 

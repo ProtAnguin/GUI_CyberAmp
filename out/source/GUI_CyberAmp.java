@@ -19,7 +19,7 @@ public class GUI_CyberAmp extends PApplet {
 
 /* DECLARATIONS
 ******************************************************************************/
-String GUINAME = "Cyber Amp GUI";
+String GUINAME = "CyberAmp GUI";
 
 
 
