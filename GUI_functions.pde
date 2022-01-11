@@ -31,8 +31,8 @@ void controlEvent(ControlEvent theEvent) {
   println(eventName);
 
   if(eventName.substring(0, 3).equals("btn")) {
-    int currCh = int(eventName.substring(6));
-    float t_corrFac = 1;
+    int currCh = int(eventName.substring(6)); // get channel number
+    float temp_corrFac = 1;
     boolean forceUpdateOffset = false;
     //-------------------------------------------------------------------------------------------------------------------------------------------- P
     if(eventName.substring(3, 4).equals("P")) {
@@ -42,16 +42,16 @@ void controlEvent(ControlEvent theEvent) {
       if(eventName.substring(4, 6).equals("dw")) { vals[linP][currCh] = constrain(--vals[linP][currCh], 0, optsP.length-1);}
       int t_new_I = vals[linP][currCh];
 
-      t_corrFac = pow(10, t_old_I-t_new_I);
+      temp_corrFac = pow(10, t_old_I-t_new_I);
 
-      writeToPort("AT0G" + str(currCh+1) + "P" + optsP[ vals[linP][currCh] ]);
+      writeToPort("AT" + str(DEV_LOC) + "G" + str(currCh+1) + "P" + optsP[ vals[linP][currCh] ]);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- O
     if(eventName.substring(3, 4).equals("O")) {
       if(eventName.substring(4, 6).equals("up")) { vals[linO][currCh] = constrain(++vals[linO][currCh], 0, optsO.length-1); }
       if(eventName.substring(4, 6).equals("dw")) { vals[linO][currCh] = constrain(--vals[linO][currCh], 0, optsO.length-1); }
-      writeToPort("AT0G" + str(currCh+1) + "O" + optsO[ vals[linO][currCh] ]);
+      writeToPort("AT" + str(DEV_LOC) + "G" + str(currCh+1) + "O" + optsO[ vals[linO][currCh] ]);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- F
@@ -61,37 +61,37 @@ void controlEvent(ControlEvent theEvent) {
       int t_val = optsF[ vals[linF][currCh] ];
       String t_filt = str(t_val);
       if(t_val == 0) { t_filt = "-"; }
-      writeToPort("AT0F" + str(currCh+1) + t_filt);
+      writeToPort("AT" + str(DEV_LOC) + "F" + str(currCh+1) + t_filt);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- W
     if(eventName.substring(3, 4).equals("W")) {
-      writeToPort("AT0W");
+      writeToPort("AT" + str(DEV_LOC) + "W");
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- N
     if(eventName.substring(3, 4).equals("N")) {
       String t_state = "-";
       if(cp5.get(Button.class,"btnNsw"+str(currCh)).getBooleanValue()) { t_state = "+"; }
-      writeToPort("AT0N" + str(currCh+1) + t_state);
+      writeToPort("AT" + str(DEV_LOC) + "N" + str(currCh+1) + t_state);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- D
-    if(eventName.substring(3, 6).equals("Dup") || forceUpdateOffset) { // update offset
-      int t_val = int(t_corrFac * float(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
+    if(eventName.substring(3, 6).equals("Dup") || forceUpdateOffset) { // D <up>date offset
+      int t_val = int(temp_corrFac * float(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
       cp5.get(Textfield.class,"txtD"+str(currCh)).setValue( str(t_val) );
       limitValues();
       
       String t_pol = "+";
       if(t_val < 0) { t_pol = "-"; };
-      writeToPort("AT0D" + str(currCh+1) + t_pol + abs(t_val));
+      writeToPort("AT" + str(DEV_LOC) + "D" + str(currCh+1) + t_pol + abs(t_val));
     }
-    if(eventName.substring(3, 6).equals("Dze") || forceUpdateOffset) { // update offset
-      if (myPort.available() > 0) {
-        myPort.clear();
+
+    if(eventName.substring(3, 6).equals("Dze")) { // update offset
+      if (connected) {
+        if (myPort.available() > 0) { myPort.clear(); } // flush the buffer as the next value will be a report from calling Zero
       }
-      writeToPort("AT0Z" + str(currCh+1));
-      
+      writeToPort("AT" + str(DEV_LOC) + "Z" + str(currCh+1));
     }
   }
   
@@ -100,7 +100,7 @@ void controlEvent(ControlEvent theEvent) {
     int currCh = int(eventName.substring(6));
     String t_pol = "+";
     if(eventName.substring(5, 6).equals("n")) { t_pol = "-"; }
-    writeToPort("AT0C" + str(currCh+1) + t_pol + optsC[int(theEvent.getValue())]);
+    writeToPort("AT" + str(DEV_LOC) + "C" + str(currCh+1) + t_pol + optsC[int(theEvent.getValue())]);
   }
 
   //-------------------------------------------------------------------------------------------------------------------------------------------- COM
@@ -111,11 +111,14 @@ void controlEvent(ControlEvent theEvent) {
         myPort.stop();
         connected = false;
       }
-      // myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE);
+      
+      DEV_LOC = constrain(int(cp5.get(Textfield.class,"address_t").getText()), 0, 9);
+      cp5.get(Textfield.class,"address_t").setValue(str(DEV_LOC));
+      
       myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE, 'N', 8, 1);
       myPort.bufferUntil('\r');
       connected = true;
-      writeToPort("AT0S+");
+      writeToPort("AT" + str(DEV_LOC) + "S+");
     }
   }
 }
@@ -409,15 +412,6 @@ void updateLabels(){
   }
 }
 
-void updateCyberAmp(int N) {
-  DropdownList CL = cp5.get(DropdownList.class,"gain"+str(N)); // current list
-  int t = int(CL.getValue());
-  writeToPort("AT0G" + str(N) + "P" + str(gain[t]) );
-
-  CL = cp5.get(DropdownList.class,"gain"+str(2));
-  // CL.setValue(float(t));
-}
-
 void limitValues() {
   for(int i = 0; i<Nch; i++) {
     int currCh = i;
@@ -438,8 +432,6 @@ void parseReportForOneChannel(String in) {
   }
 
   for (int i = 0; i <= pos.length-1; i++) {
-    // println("i:" + str(i) + " pos[i]:" + str(pos[i]));
-
     int cpos = pos[i];
 
     if(in.substring(cpos-1, cpos).equals("+")) {

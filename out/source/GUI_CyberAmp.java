@@ -30,26 +30,24 @@ Serial myPort; // selected COM port
 boolean connected = false;
 String incoming = "";
 
-// TODO: Check how is it working given that the BAUDRATE for ATEN is 9600
-static int BAUDRATE = 19600; // Serial baudrate, needs to be same on both ends (PC and device)
+static int BAUDRATE =   9600; // Serial baudrate, needs to be same on both ends (PC and device)
+int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
-int fontNum =     2;
-int fontSize =    11;
+int fontNum =           2;
+int fontSize =          11;
 
-int gain[] =      {1, 2, 5};
+int Nch =               8; // number of channels
+int sizeX =             650;
+int sizeY =             370;
 
-int Nch =         8; // number of channels
-int sizeX =       650;
-int sizeY =       370;
-
-int Nlin =        6; // 
-int linP =        0; // line in vals to get optsP index
-int linO =        1;
-int linCp =       2;
-int linCn =       3;
-int linF =        4;
-int linT =        5;
+int Nlin =              6; // 
+int linP =              0; // line in vals to get optsP index
+int linO =              1;
+int linCp =             2;
+int linCn =             3;
+int linF =              4;
+int linT =              5;
 
 int[][] vals = {  {0, 0, 0, 0, 0, 0, 0, 0},       // optsP index
                   {0, 0, 0, 0, 0, 0, 0, 0},       // optsO index
@@ -65,8 +63,6 @@ int optsF[] =  {  0,     2,     4,     6,     8,    10,    12,    14,    16,    
                               400,   600,   800,  1000,  1200,  1400,  1600,  1800,  2000,  2200,  2400,  2600,  2800,  3000,
                              4000,  6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000 };
 String[] optsC = {"GND", "DC ", "0.1", "1", "10", "30", "100", "300"}; // coupling options
-
-
 
 RetroDisplay[][] allDisplays;
 
@@ -118,8 +114,19 @@ public void setup() {
               .close()
               .setItems(Serial.list()) // populate with items in Serial.list (one of them will be the Arduino)
               ;
-
   customize(port_list);
+
+  cp5.addTextfield("address_t")
+      .setLabel("")
+      .setPosition(390, 20)
+      .setSize(15,15)
+      .setFont(font)
+      .setColorBackground(color(50, 50, 50))
+      .setColorActive(color(255, 0, 128))
+      .setColorValue(color(255, 255, 255))
+      .setAutoClear(false)
+      .setValue(str(DEV_LOC))
+      ;
 
   cp5.addButton("btnWtm") // write to memory
     .setLabel("Save to CyberAmp")
@@ -178,6 +185,13 @@ public void draw() {
       rect(400, 10, 220, 30);
     }
   }
+
+  if (!cp5.get(Textfield.class,"address_t").getText().equals( str(DEV_LOC) )){
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 0, 0));
+  }
+  else {
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 255, 255));
+  }
 }
 /* FUNCTIONS
 ******************************************************************************/
@@ -212,8 +226,8 @@ public void controlEvent(ControlEvent theEvent) {
   println(eventName);
 
   if(eventName.substring(0, 3).equals("btn")) {
-    int currCh = PApplet.parseInt(eventName.substring(6));
-    float t_corrFac = 1;
+    int currCh = PApplet.parseInt(eventName.substring(6)); // get channel number
+    float temp_corrFac = 1;
     boolean forceUpdateOffset = false;
     //-------------------------------------------------------------------------------------------------------------------------------------------- P
     if(eventName.substring(3, 4).equals("P")) {
@@ -223,16 +237,16 @@ public void controlEvent(ControlEvent theEvent) {
       if(eventName.substring(4, 6).equals("dw")) { vals[linP][currCh] = constrain(--vals[linP][currCh], 0, optsP.length-1);}
       int t_new_I = vals[linP][currCh];
 
-      t_corrFac = pow(10, t_old_I-t_new_I);
+      temp_corrFac = pow(10, t_old_I-t_new_I);
 
-      writeToPort("AT0G" + str(currCh+1) + "P" + optsP[ vals[linP][currCh] ]);
+      writeToPort("AT" + str(DEV_LOC) + "G" + str(currCh+1) + "P" + optsP[ vals[linP][currCh] ]);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- O
     if(eventName.substring(3, 4).equals("O")) {
       if(eventName.substring(4, 6).equals("up")) { vals[linO][currCh] = constrain(++vals[linO][currCh], 0, optsO.length-1); }
       if(eventName.substring(4, 6).equals("dw")) { vals[linO][currCh] = constrain(--vals[linO][currCh], 0, optsO.length-1); }
-      writeToPort("AT0G" + str(currCh+1) + "O" + optsO[ vals[linO][currCh] ]);
+      writeToPort("AT" + str(DEV_LOC) + "G" + str(currCh+1) + "O" + optsO[ vals[linO][currCh] ]);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- F
@@ -242,37 +256,37 @@ public void controlEvent(ControlEvent theEvent) {
       int t_val = optsF[ vals[linF][currCh] ];
       String t_filt = str(t_val);
       if(t_val == 0) { t_filt = "-"; }
-      writeToPort("AT0F" + str(currCh+1) + t_filt);
+      writeToPort("AT" + str(DEV_LOC) + "F" + str(currCh+1) + t_filt);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- W
     if(eventName.substring(3, 4).equals("W")) {
-      writeToPort("AT0W");
+      writeToPort("AT" + str(DEV_LOC) + "W");
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- N
     if(eventName.substring(3, 4).equals("N")) {
       String t_state = "-";
       if(cp5.get(Button.class,"btnNsw"+str(currCh)).getBooleanValue()) { t_state = "+"; }
-      writeToPort("AT0N" + str(currCh+1) + t_state);
+      writeToPort("AT" + str(DEV_LOC) + "N" + str(currCh+1) + t_state);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- D
-    if(eventName.substring(3, 6).equals("Dup") || forceUpdateOffset) { // update offset
-      int t_val = PApplet.parseInt(t_corrFac * PApplet.parseFloat(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
+    if(eventName.substring(3, 6).equals("Dup") || forceUpdateOffset) { // D <up>date offset
+      int t_val = PApplet.parseInt(temp_corrFac * PApplet.parseFloat(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
       cp5.get(Textfield.class,"txtD"+str(currCh)).setValue( str(t_val) );
       limitValues();
       
       String t_pol = "+";
       if(t_val < 0) { t_pol = "-"; };
-      writeToPort("AT0D" + str(currCh+1) + t_pol + abs(t_val));
+      writeToPort("AT" + str(DEV_LOC) + "D" + str(currCh+1) + t_pol + abs(t_val));
     }
-    if(eventName.substring(3, 6).equals("Dze") || forceUpdateOffset) { // update offset
-      if (myPort.available() > 0) {
-        myPort.clear();
+
+    if(eventName.substring(3, 6).equals("Dze")) { // update offset
+      if (connected) {
+        if (myPort.available() > 0) { myPort.clear(); } // flush the buffer as the next value will be a report from calling Zero
       }
-      writeToPort("AT0Z" + str(currCh+1));
-      
+      writeToPort("AT" + str(DEV_LOC) + "Z" + str(currCh+1));
     }
   }
   
@@ -281,7 +295,7 @@ public void controlEvent(ControlEvent theEvent) {
     int currCh = PApplet.parseInt(eventName.substring(6));
     String t_pol = "+";
     if(eventName.substring(5, 6).equals("n")) { t_pol = "-"; }
-    writeToPort("AT0C" + str(currCh+1) + t_pol + optsC[PApplet.parseInt(theEvent.getValue())]);
+    writeToPort("AT" + str(DEV_LOC) + "C" + str(currCh+1) + t_pol + optsC[PApplet.parseInt(theEvent.getValue())]);
   }
 
   //-------------------------------------------------------------------------------------------------------------------------------------------- COM
@@ -292,11 +306,14 @@ public void controlEvent(ControlEvent theEvent) {
         myPort.stop();
         connected = false;
       }
-      // myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE);
+      
+      DEV_LOC = constrain(PApplet.parseInt(cp5.get(Textfield.class,"address_t").getText()), 0, 9);
+      cp5.get(Textfield.class,"address_t").setValue(str(DEV_LOC));
+      
       myPort = new Serial(this, Serial.list()[PApplet.parseInt(port_list.getValue())], BAUDRATE, 'N', 8, 1);
       myPort.bufferUntil('\r');
       connected = true;
-      writeToPort("AT0S+");
+      writeToPort("AT" + str(DEV_LOC) + "S+");
     }
   }
 }
@@ -590,15 +607,6 @@ public void updateLabels(){
   }
 }
 
-public void updateCyberAmp(int N) {
-  DropdownList CL = cp5.get(DropdownList.class,"gain"+str(N)); // current list
-  int t = PApplet.parseInt(CL.getValue());
-  writeToPort("AT0G" + str(N) + "P" + str(gain[t]) );
-
-  CL = cp5.get(DropdownList.class,"gain"+str(2));
-  // CL.setValue(float(t));
-}
-
 public void limitValues() {
   for(int i = 0; i<Nch; i++) {
     int currCh = i;
@@ -619,8 +627,6 @@ public void parseReportForOneChannel(String in) {
   }
 
   for (int i = 0; i <= pos.length-1; i++) {
-    // println("i:" + str(i) + " pos[i]:" + str(pos[i]));
-
     int cpos = pos[i];
 
     if(in.substring(cpos-1, cpos).equals("+")) {
