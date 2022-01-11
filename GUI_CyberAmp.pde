@@ -11,27 +11,24 @@ Serial myPort; // selected COM port
 boolean connected = false;
 String incoming = "";
 
-// TODO: Check how is it working given that the BAUDRATE for ATEN is 9600
-static int BAUDRATE = 19600; // Serial baudrate, needs to be same on both ends (PC and device)
-static int DEV_LOC = 0; // device location 0-9 if multiple devices are used on the same COM port
+static int BAUDRATE =   9600; // Serial baudrate, needs to be same on both ends (PC and device)
+static int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
-int fontNum =     2;
-int fontSize =    11;
+int fontNum =           2;
+int fontSize =          11;
 
-int gain[] =      {1, 2, 5};
+int Nch =               8; // number of channels
+int sizeX =             650;
+int sizeY =             370;
 
-int Nch =         8; // number of channels
-int sizeX =       650;
-int sizeY =       370;
-
-int Nlin =        6; // 
-int linP =        0; // line in vals to get optsP index
-int linO =        1;
-int linCp =       2;
-int linCn =       3;
-int linF =        4;
-int linT =        5;
+int Nlin =              6; // 
+int linP =              0; // line in vals to get optsP index
+int linO =              1;
+int linCp =             2;
+int linCn =             3;
+int linF =              4;
+int linT =              5;
 
 int[][] vals = {  {0, 0, 0, 0, 0, 0, 0, 0},       // optsP index
                   {0, 0, 0, 0, 0, 0, 0, 0},       // optsO index

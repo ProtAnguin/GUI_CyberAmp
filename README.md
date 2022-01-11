@@ -48,6 +48,13 @@ The schematics for each channel can be found on page 6 of the "CyberAmp 380 oper
 - PostAmp is the output amplifier
 - TotalAmp reports the total amplification
 
+### Make an executable program
+To avoid the need of oppening the GUI from Processing you can Export an Applicaition:
+Processing > File > Export Application... and follow the instructions.
+
+### Advanced use
+There is a "DEBUG" boolean in "GUI_CyberAmp.pde" that can be changet to "true" which will enable a text field which can be accessed with the mouse or by the TAB key. One can write a command and send it with the ENTER key to the device. If running the GUI from Processing any echo from CyberAmp should be in the Console. There is no echo visible in a Exported Application.
+
 ## Future ideas
 - overload detection
 - user definable colours
