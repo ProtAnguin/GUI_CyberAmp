@@ -31,7 +31,7 @@ boolean connected = false;
 String incoming = "";
 
 static int BAUDRATE =   9600; // Serial baudrate, needs to be same on both ends (PC and device)
-static int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
+int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
 int fontNum =           2;
@@ -114,8 +114,19 @@ public void setup() {
               .close()
               .setItems(Serial.list()) // populate with items in Serial.list (one of them will be the Arduino)
               ;
-
   customize(port_list);
+
+  cp5.addTextfield("address_t")
+      .setLabel("")
+      .setPosition(390, 20)
+      .setSize(15,15)
+      .setFont(font)
+      .setColorBackground(color(50, 50, 50))
+      .setColorActive(color(255, 0, 128))
+      .setColorValue(color(255, 255, 255))
+      .setAutoClear(false)
+      .setValue(str(DEV_LOC))
+      ;
 
   cp5.addButton("btnWtm") // write to memory
     .setLabel("Save to CyberAmp")
@@ -173,6 +184,13 @@ public void draw() {
       fill(color( 255*sin(radians(millis()/3)), 0, 0));
       rect(400, 10, 220, 30);
     }
+  }
+
+  if (!cp5.get(Textfield.class,"address_t").getText().equals( str(DEV_LOC) )){
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 0, 0));
+  }
+  else {
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 255, 255));
   }
 }
 /* FUNCTIONS
@@ -264,7 +282,10 @@ public void controlEvent(ControlEvent theEvent) {
       writeToPort("AT" + str(DEV_LOC) + "D" + str(currCh+1) + t_pol + abs(t_val));
     }
 
-    if(eventName.substring(3, 6).equals("Dze")) { // zero offset
+    if(eventName.substring(3, 6).equals("Dze")) { // update offset
+      if (connected) {
+        if (myPort.available() > 0) { myPort.clear(); } // flush the buffer as the next value will be a report from calling Zero
+      }
       writeToPort("AT" + str(DEV_LOC) + "Z" + str(currCh+1));
     }
   }
@@ -285,7 +306,10 @@ public void controlEvent(ControlEvent theEvent) {
         myPort.stop();
         connected = false;
       }
-      // myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE);
+      
+      DEV_LOC = constrain(PApplet.parseInt(cp5.get(Textfield.class,"address_t").getText()), 0, 9);
+      cp5.get(Textfield.class,"address_t").setValue(str(DEV_LOC));
+      
       myPort = new Serial(this, Serial.list()[PApplet.parseInt(port_list.getValue())], BAUDRATE, 'N', 8, 1);
       myPort.bufferUntil('\r');
       connected = true;

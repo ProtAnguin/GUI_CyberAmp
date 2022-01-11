@@ -12,7 +12,7 @@ boolean connected = false;
 String incoming = "";
 
 static int BAUDRATE =   9600; // Serial baudrate, needs to be same on both ends (PC and device)
-static int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
+int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
 int fontNum =           2;
@@ -95,8 +95,19 @@ void setup() {
               .close()
               .setItems(Serial.list()) // populate with items in Serial.list (one of them will be the Arduino)
               ;
-
   customize(port_list);
+
+  cp5.addTextfield("address_t")
+      .setLabel("")
+      .setPosition(390, 20)
+      .setSize(15,15)
+      .setFont(font)
+      .setColorBackground(color(50, 50, 50))
+      .setColorActive(color(255, 0, 128))
+      .setColorValue(color(255, 255, 255))
+      .setAutoClear(false)
+      .setValue(str(DEV_LOC))
+      ;
 
   cp5.addButton("btnWtm") // write to memory
     .setLabel("Save to CyberAmp")
@@ -154,5 +165,12 @@ void draw() {
       fill(color( 255*sin(radians(millis()/3)), 0, 0));
       rect(400, 10, 220, 30);
     }
+  }
+
+  if (!cp5.get(Textfield.class,"address_t").getText().equals( str(DEV_LOC) )){
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 0, 0));
+  }
+  else {
+    cp5.get(Textfield.class,"address_t").setColorValue(color(255, 255, 255));
   }
 }

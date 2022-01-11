@@ -111,7 +111,10 @@ void controlEvent(ControlEvent theEvent) {
         myPort.stop();
         connected = false;
       }
-      // myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE);
+      
+      DEV_LOC = constrain(int(cp5.get(Textfield.class,"address_t").getText()), 0, 9);
+      cp5.get(Textfield.class,"address_t").setValue(str(DEV_LOC));
+      
       myPort = new Serial(this, Serial.list()[int(port_list.getValue())], BAUDRATE, 'N', 8, 1);
       myPort.bufferUntil('\r');
       connected = true;
