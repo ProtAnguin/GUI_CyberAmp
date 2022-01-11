@@ -13,6 +13,7 @@ String incoming = "";
 
 // TODO: Check how is it working given that the BAUDRATE for ATEN is 9600
 static int BAUDRATE = 19600; // Serial baudrate, needs to be same on both ends (PC and device)
+static int DEV_LOC = 0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
 int fontNum =     2;
@@ -46,8 +47,6 @@ int optsF[] =  {  0,     2,     4,     6,     8,    10,    12,    14,    16,    
                               400,   600,   800,  1000,  1200,  1400,  1600,  1800,  2000,  2200,  2400,  2600,  2800,  3000,
                              4000,  6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000 };
 String[] optsC = {"GND", "DC ", "0.1", "1", "10", "30", "100", "300"}; // coupling options
-
-
 
 RetroDisplay[][] allDisplays;
 
