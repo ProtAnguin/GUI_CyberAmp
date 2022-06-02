@@ -18,7 +18,7 @@ PFont font;
 int fontNum =           4;
 int fontSize =          11;
 
-int Nch =               8; // number of channels
+int Nch =               2; // number of channels
 int sizeX =             650;
 int sizeY =             Nch*30+100; //370;
 

@@ -28,12 +28,16 @@ A Graphical User Interface for CyberAmp 320 and CyberAmp 380 as the CyberAmp Con
     - Install libraries (Sketch > Import Library... > Add Library > search for "controlP5" and Install)
 
 - Download the repository, open "GUI_CyberAmp.pde" in Processing 
-- Set the nCh to 2 or 8, depending on the CyberAmp used
+- Set the Nch to 2 or 8, depending on the CyberAmp used
 - Sketch > Run or Export as an application and run that
 
-![ScreenshotGUI](GUI_CyberAmp_preConnect.png)
-
 ## How to use
+Nch set to 2 is used for CyberAmp320:
+![ScreenshotGUI](GUI_CyberAmp_preConnect_2ch.png)
+
+Nch set to 8 is used for CyberAmp380:
+![ScreenshotGUI](GUI_CyberAmp_preConnect_8ch.png)
+
 The first thing to do is select the device address, which can be in the range from 0 to 9. Input the correct value in the textField next to the Serial port dropdown menu. The value is red if it has not yet been updated.
 Then we need to connect to the appropriate Serial COM port (that was COM 7 in this example  [Setup and Launch](#setup-and-launch)) by selecting the correct one from the "Serial port" drop-down menu. If a correct device is selected the GUI will query the CyberAmp for current values and update every channel to the last stored values in the CyberAmp.
 
