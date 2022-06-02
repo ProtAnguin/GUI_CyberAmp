@@ -56,13 +56,21 @@ void controlEvent(ControlEvent theEvent) {
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- F
-    if(eventName.substring(3, 4).equals("F")) {
-      if(eventName.substring(4, 6).equals("up")) { vals[linF][currCh] = constrain(++vals[linF][currCh], 0, optsF.length-1); }
-      if(eventName.substring(4, 6).equals("dw")) { vals[linF][currCh] = constrain(--vals[linF][currCh], 0, optsF.length-1); }
-      int t_val = optsF[ vals[linF][currCh] ];
-      String t_filt = str(t_val);
-      if(t_val == 0) { t_filt = "-"; }
-      writeToPort("AT" + str(DEV_LOC) + "F" + str(currCh+1) + t_filt);
+    if(eventName.substring(3, 4).equals("F") || eventName.substring(3, 4).equals("B")) {
+      if(cp5.get(Button.class,"btnBsw"+str(currCh)).getBooleanValue()) {
+        writeToPort("AT" + str(DEV_LOC) + "F" + str(currCh+1) + "-"); // set LPF to bypass
+        allDisplays[linF][currCh].setColor("act", C_LPF_off); // change colour of the LPF dial
+      }
+      else {
+        if(eventName.substring(4, 6).equals("up")) { vals[linF][currCh] = constrain(++vals[linF][currCh], 0, optsF.length-1); }
+        if(eventName.substring(4, 6).equals("dw")) { vals[linF][currCh] = constrain(--vals[linF][currCh], 0, optsF.length-1); }
+        int t_val = optsF[ vals[linF][currCh] ];
+        String t_filt = str(t_val);
+        if(t_val == 0) { t_filt = "-"; }
+        writeToPort("AT" + str(DEV_LOC) + "F" + str(currCh+1) + t_filt);
+        allDisplays[linF][currCh].setColor("act", C_LPF_on); // change colour of the LPF dial
+        cp5.get(Button.class,"btnBsw"+str(currCh)).setBroadcast(false).setOff().setBroadcast(true);
+      }
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- W
@@ -255,7 +263,7 @@ int[] wl2RGB(double Wavelength){
 
     return rgb;
 }
-
+//-------------------------------------------------------------------------------------------------------------------------------------------- CHANNEL CONSTRUCTION
 void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
   int btnW = W;
   int btnH = H;
@@ -307,7 +315,7 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
 
   // P part (pre-amp)
   Xpos += 65;
-  allDisplays[linP][N] = new RetroDisplay(3, Xpos, Ypos-btnH, int(2.5*btnW)); // figure out how to get the max number of difits from optsP[] array
+  allDisplays[linP][N] = new RetroDisplay(3, Xpos, Ypos-btnH, int(2.5*btnW)); // figure out how to get the max number of digits from optsP[] array
   
   Xpos += int(4*btnW);
   cp5.addButton("btnPdw"+str(N))
@@ -372,7 +380,7 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
   // LPF part
   Xpos += 2*btnW;
   allDisplays[linF][N] = new RetroDisplay(5, Xpos+btnW, Ypos-btnH, int(2.5*btnW)); // figure out how to get the max number of difits from optsP[] array
-  allDisplays[linF][N].setColor("act", color(255,255,0));
+  allDisplays[linF][N].setColor("act", C_LPF_on);  
 
   Xpos += int(7.2*btnW);
   cp5.addButton("btnFdw"+str(N))
@@ -387,8 +395,20 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
     .setSize(btnW, btnH)
     ;
 
-  // Notch part
+  // Bypass part
   Xpos += 2*btnW;
+  cp5.addButton("btnBsw"+str(N))
+    .setLabel("B")
+    .setPosition(Xpos, Ypos-btnH+3)
+    .setSize(2*btnW, 2*btnH)
+    .setSwitch(true)
+    .setColorBackground( colBck )
+    .setColorActive( colAct )
+    .setColorValue( colLbl )
+    ;
+  
+  // Notch part
+  Xpos += 3*btnW;
   cp5.addButton("btnNsw"+str(N))
     .setLabel("N")
     .setPosition(Xpos, Ypos-btnH+3)

@@ -19,7 +19,7 @@ int fontNum =           4;
 int fontSize =          11;
 
 int Nch =               2; // number of channels
-int sizeX =             650;
+int sizeX =             700;
 int sizeY =             Nch*30+100; //370;
 
 int Nlin =              6; // 
@@ -46,6 +46,8 @@ int optsF[] =  {  0,     2,     4,     6,     8,    10,    12,    14,    16,    
 String[] optsC = {"GND", "DC ", "0.1", "1", "10", "30", "100", "300"}; // coupling options
 
 RetroDisplay[][] allDisplays;
+color C_LPF_on  = color(255, 255, 0);
+color C_LPF_off = color(125, 125, 125);
 
 boolean pointToSerialPortDropdown = false;
 
@@ -151,16 +153,16 @@ void draw() {
     text("Ch" + str(i), Xlab, Ylab+(i-1)*30);
   }
   
-  Xlab = 75;
   Ylab = 58;
-  text("POZ", Xlab, Ylab);
-  text("NEG", Xlab+60, Ylab);
-  text("PreAmp", Xlab+118, Ylab);
-  text("Offset", Xlab+218, Ylab);
-  text("LPF", Xlab+340, Ylab);
-  text("NOTCH", Xlab+396, Ylab);
-  text("PostAmp", Xlab+452, Ylab);
-  text("TotalAmp", Xlab+523, Ylab);
+  Xlab = 75;    text("POZ", Xlab, Ylab);
+  Xlab += 60;   text("NEG", Xlab, Ylab);
+  Xlab += 58;   text("PreAmp", Xlab, Ylab);
+  Xlab += 100;  text("Offset", Xlab, Ylab);
+  Xlab += 122;  text("LPF", Xlab, Ylab);
+  Xlab += 58;   text("BPass", Xlab, Ylab);
+  Xlab += 40;   text("Notch", Xlab, Ylab);
+  Xlab += 48;   text("PostAmp", Xlab, Ylab);
+  Xlab += 71;   text("TotalAmp", Xlab, Ylab);
 
   if (!connected && pointToSerialPortDropdown) {
     for(int i = 1; i <= 10; i++) {

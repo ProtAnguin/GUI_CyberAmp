@@ -58,6 +58,7 @@ The schematics for each channel can be found on page 6 of the "CyberAmp 380 oper
     - "+" and "-" will change the current Offset value as well as update it
     - Zero will zero-offset the channel if possible
 - LPF is the Low Pass Filter
+- Bypass disables LPF (the bandwidth is ~50 kHz)
 - Notch filter selection toggle button
 - PostAmp is the output amplifier
 - TotalAmp reports the total amplification of the signal
