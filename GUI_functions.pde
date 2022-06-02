@@ -33,6 +33,7 @@ void controlEvent(ControlEvent theEvent) {
   if(eventName.substring(0, 3).equals("btn")) {
     int currCh = int(eventName.substring(6)); // get channel number
     float temp_corrFac = 1;
+    int   ofsStepFac = 1;
     boolean forceUpdateOffset = false;
     //-------------------------------------------------------------------------------------------------------------------------------------------- P
     if(eventName.substring(3, 4).equals("P")) {
@@ -77,11 +78,27 @@ void controlEvent(ControlEvent theEvent) {
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------- D
+    if(eventName.substring(3, 6).equals("Dpl") || eventName.substring(3, 6).equals("Dmi")) { // D increase offset
+      forceUpdateOffset = true; // this will call an update
+      
+      int t_val = int(temp_corrFac * float(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
+      int t_add = int(pow(10, 2-vals[linP][currCh])) * 100;
+      if (eventName.substring(3, 6).equals("Dpl")) {
+        t_val += t_add;
+      }
+      else {
+        t_val -= t_add;
+      }
+      
+      cp5.get(Textfield.class,"txtD"+str(currCh)).setValue( str(t_val) );
+    }
+    
     if(eventName.substring(3, 6).equals("Dup") || forceUpdateOffset) { // D <up>date offset
       int t_val = int(temp_corrFac * float(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
       cp5.get(Textfield.class,"txtD"+str(currCh)).setValue( str(t_val) );
       limitValues();
       
+      t_val = int(float(cp5.get(Textfield.class,"txtD"+str(currCh)).getText()));
       String t_pol = "+";
       if(t_val < 0) { t_pol = "-"; };
       writeToPort("AT" + str(DEV_LOC) + "D" + str(currCh+1) + t_pol + abs(t_val));
@@ -251,14 +268,14 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
   int colLbl = color(100,200,0);
 
   // POS & NEG input part
-  cp5.addDropdownList("listCp"+str(N)) // make post list dropdown
+  cp5.addDropdownList("listCp"+str(N)) // Channel POZ input
     .setBroadcast(false)
     .setPosition(Xpos, Ypos-btnH)
     .setSize(50, 80)
     .close()
     .setFont(font)
     .setValue(vals[linCp][N])
-    .setItems(optsC) // populate with items in Serial.list (one of them will be the Arduino)
+    .setItems(optsC)
     .setBarHeight(2*btnH)
     .setItemHeight(2*btnH)
     .setCaptionLabel(optsC[vals[linCp][N]])
@@ -270,14 +287,14 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
     ;
 
   Xpos += 60;
-  cp5.addDropdownList("listCn"+str(N)) // make post list dropdown
+  cp5.addDropdownList("listCn"+str(N)) // Channel NEG input
     .setBroadcast(false)
     .setPosition(Xpos, Ypos-btnH)
     .setSize(50, 80)
     .close()
     .setFont(font)
     .setValue(vals[linCn][N])
-    .setItems(optsC) // populate with items in Serial.list (one of them will be the Arduino)
+    .setItems(optsC)
     .setBarHeight(2*btnH)
     .setItemHeight(2*btnH)
     .setCaptionLabel(optsC[vals[linCn][N]])
@@ -288,7 +305,7 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
     .setBroadcast(true)
     ;
 
-  // P part
+  // P part (pre-amp)
   Xpos += 65;
   allDisplays[linP][N] = new RetroDisplay(3, Xpos, Ypos-btnH, int(2.5*btnW)); // figure out how to get the max number of difits from optsP[] array
   
@@ -305,7 +322,7 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
     .setSize(btnW, btnH)
     ;
 
-  // DC part (with "zero" button)
+  // DC part (with "update" and "zero" buttons)
   Xpos += 2*btnH;
   cp5.addTextfield("txtD"+str(N))
     .setLabel("")
@@ -318,8 +335,21 @@ void constructChannel(int N, int Xpos, int Ypos, int W, int H) {
     .setColorValue( colLbl )
     .setAutoClear(false)
     ;
-
+  
   Xpos += 75;
+  cp5.addButton("btnDmi"+str(N))
+    .setLabel("-")
+    .setPosition(Xpos, Ypos)
+    .setSize(btnW, btnH)
+    ;
+
+  cp5.addButton("btnDpl"+str(N))
+    .setLabel("+")
+    .setPosition(Xpos, Ypos-btnH)
+    .setSize(btnW, btnH)
+    ;
+
+  Xpos += 2*btnW;
   cp5.addButton("btnDup"+str(N))
     .setLabel("U")
     .setPosition(Xpos, Ypos-btnH+3)

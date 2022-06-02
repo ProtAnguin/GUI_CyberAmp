@@ -15,12 +15,12 @@ static int BAUDRATE =   9600; // Serial baudrate, needs to be same on both ends 
 int DEV_LOC =    0; // device location 0-9 if multiple devices are used on the same COM port
 
 PFont font;
-int fontNum =           2;
+int fontNum =           4;
 int fontSize =          11;
 
 int Nch =               8; // number of channels
 int sizeX =             650;
-int sizeY =             370;
+int sizeY =             Nch*30+100; //370;
 
 int Nlin =              6; // 
 int linP =              0; // line in vals to get optsP index
@@ -85,8 +85,11 @@ void setup() {
 
   allDisplays = new RetroDisplay[Nlin][Nch];
 
-  for (int i = Nch-1; i>=0; i--) {
-    constructChannel(i, 50, 80+i*30, 10, 10);
+  int currYval = 0;
+  //for (int i = Nch-1; i>=0; i--) {
+  for (int i = 0; i<=Nch-1; i++) {
+    currYval = 80+i*30;
+    constructChannel(i, 50, currYval, 10, 10);
   }
 
   port_list = cp5.addDropdownList("port_list") // make port list dropdown
@@ -111,7 +114,7 @@ void setup() {
 
   cp5.addButton("btnWtm") // write to memory
     .setLabel("Save to CyberAmp")
-    .setPosition(450, 320)
+    .setPosition(450, currYval + 20)
     .setSize(150, 20)
     .setFont(font)
     .setColorBackground(color(50, 50, 50))
@@ -154,10 +157,10 @@ void draw() {
   text("NEG", Xlab+60, Ylab);
   text("PreAmp", Xlab+118, Ylab);
   text("Offset", Xlab+218, Ylab);
-  text("LPF", Xlab+325, Ylab);
-  text("NOTCH", Xlab+381, Ylab);
-  text("PostAmp", Xlab+432, Ylab);
-  text("TotalAmp", Xlab+500, Ylab);
+  text("LPF", Xlab+340, Ylab);
+  text("NOTCH", Xlab+396, Ylab);
+  text("PostAmp", Xlab+452, Ylab);
+  text("TotalAmp", Xlab+523, Ylab);
 
   if (!connected && pointToSerialPortDropdown) {
     for(int i = 1; i <= 10; i++) {
